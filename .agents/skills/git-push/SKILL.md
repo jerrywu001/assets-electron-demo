@@ -47,7 +47,10 @@ Use Conventional Commit messages accepted by `commitlint.config.cjs`:
 Derive the commit message from the reviewed diff. Write the Conventional Commit subject and body in Chinese. Do not use generic subjects such as `更新项目` or `完善管理`.
 
 - Use a specific Conventional Commit subject that states the dominant change.
+- First derive a short one-line main summary from the current reviewed diff (normally about 20 Chinese characters, and no more than 40 unless a technical name requires it); use that exact summary as the commit subject after the Conventional Commit type prefix (`type: 摘要`). The subject is the headline shown by Git clients and must describe this change's actual dominant outcome.
+- Never reuse the previous commit subject, branch name, task title, or a fixed phrase such as `fix: 完善资产分类管理体验`. Before committing, compare the proposed subject with `git log -1 --pretty=%s`; if it is unchanged or not supported by the staged diff, regenerate it.
 - For changes spanning two or more functional areas, add a commit body with one `- ` bullet per area. Summarize user-visible behavior, data model, tooling, or documentation changes; do not list every file.
+- Body bullets expand the headline and must not replace it; do not put the actual main summary only in the body.
 - Re-read the staged diff immediately before committing and ensure every bullet is supported by it.
 
 Stage intended files explicitly. Do not use force push unless the user explicitly requests a history rewrite.

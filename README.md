@@ -35,6 +35,14 @@
 pnpm i
 ```
 
+如果 Electron 安装阶段失败，或启动时提示 Electron 二进制缺失，请在项目目录执行：
+
+```sh
+pnpm rebuild electron
+```
+
+项目已通过 `.npmrc` 配置 Electron 镜像，重建时会继续使用该镜像下载。
+
 复制数据库配置文件：
 
 ```powershell
