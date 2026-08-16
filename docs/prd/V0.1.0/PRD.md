@@ -261,7 +261,7 @@ audits        (id, action, detail, at)   -- 沿用现有
 | 安全基线 | contextIsolation / sandbox / CSP / 最小权限 preload 全部沿用 |
 | 性能 | 台账 1000 条内列表不卡（分页或虚拟滚动超量再说） |
 | 数据 | MySQL 集中存储；连接配置 db.config.json 不入库 git |
-| 兼容 | Windows 10/11 x64 |
+| 兼容 | Windows 10/11、macOS、Linux；本机配置采集支持三端 |
 | 打包 | electron-builder NSIS + autoUpdater 配置沿用 |
 
 ## 7. 非目标（本版不做）

@@ -1,9 +1,9 @@
 // ==================== Preload 脚本（沙箱环境）====================
 // electron-vite 会用 rollup 把 preload 打成【单文件】，
 // 所以即使在 sandbox 下也能自由 import shared 里的常量。
-import { contextBridge, ipcRenderer } from 'electron'
-import { IpcChannel } from '../shared/ipc'
-import type { AssetApi } from '../shared/ipc'
+import { contextBridge, ipcRenderer } from 'electron';
+import { IpcChannel } from '../shared/ipc';
+import type { AssetApi } from '../shared/ipc';
 
 /**
  * IPC 参数净化（第二道防线）：参数跨 contextBridge 边界时就会被结构化克隆，
@@ -12,8 +12,8 @@ import type { AssetApi } from '../shared/ipc'
  * 这里的 plain() 兜底处理其他不可克隆的普通嵌套结构，保持桥接层健壮。
  */
 function plain<T>(value: T): T {
-  if (value === null || typeof value !== 'object') return value
-  return JSON.parse(JSON.stringify(value)) as T
+  if (value === null || typeof value !== 'object') return value;
+  return JSON.parse(JSON.stringify(value)) as T;
 }
 
 const api: AssetApi = {
@@ -57,11 +57,11 @@ const api: AssetApi = {
   listAudits: (limit) => ipcRenderer.invoke(IpcChannel.AuditList, limit),
   // send/on：主进程主动推送（打印/下载被拦截的管控通知）
   onAuditNotice: (cb) => {
-    ipcRenderer.on(IpcChannel.AuditNotice, (_e, msg: string) => cb(msg))
+    ipcRenderer.on(IpcChannel.AuditNotice, (_e, msg: string) => cb(msg));
   },
   // 无边框窗口控制
-  windowControl: (action) => ipcRenderer.invoke(IpcChannel.WindowControl, action)
-}
+  windowControl: (action) => ipcRenderer.invoke(IpcChannel.WindowControl, action),
+};
 
 // contextBridge：因为开了 contextIsolation，这是网页唯一能碰到我们的"门缝"
-contextBridge.exposeInMainWorld('electronAPI', api)
+contextBridge.exposeInMainWorld('electronAPI', api);

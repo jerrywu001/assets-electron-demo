@@ -1,7 +1,7 @@
 // ==================== 采集记录 DAO ====================
-import type { ResultSetHeader, RowDataPacket } from 'mysql2/promise'
-import { getPool } from './connection'
-import type { AssetInfo, CollectRecord } from '../../shared/types'
+import type { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { getPool } from './connection';
+import type { AssetInfo, CollectRecord } from '../../shared/types';
 
 export async function insertCollectRecord(a: AssetInfo): Promise<number> {
   const [r] = await getPool().query<ResultSetHeader>(
@@ -9,19 +9,27 @@ export async function insertCollectRecord(a: AssetInfo): Promise<number> {
       (hostname, mac, os, cpu, cpu_cores, mem_total_mb, disks_json, nics_json, collected_at)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
-      a.hostname, a.mac || null, a.os, a.cpu, a.cpuCores, a.memTotalMB,
-      JSON.stringify(a.disks), JSON.stringify(a.nics),
-      new Date().toLocaleString()
-    ]
-  )
-  return r.insertId
+      a.hostname,
+      a.mac || null,
+      a.os,
+      a.cpu,
+      a.cpuCores,
+      a.memTotalMB,
+      JSON.stringify(a.disks),
+      JSON.stringify(a.nics),
+      new Date().toLocaleString(),
+    ],
+  );
+
+  return r.insertId;
 }
 
 export async function listCollectRecords(): Promise<CollectRecord[]> {
   const [rows] = await getPool().query<RowDataPacket[]>(
-    'SELECT * FROM collect_records ORDER BY id DESC LIMIT 500'
-  )
-  return rows as CollectRecord[]
+    'SELECT * FROM collect_records ORDER BY id DESC LIMIT 500',
+  );
+
+  return rows as CollectRecord[];
 }
 
 /**
@@ -30,14 +38,15 @@ export async function listCollectRecords(): Promise<CollectRecord[]> {
  */
 export async function findExistingRecord(
   hostname: string,
-  macs: string[]
+  macs: string[],
 ): Promise<CollectRecord | null> {
   const macCond = macs.length
     ? `OR mac IN (${macs.map(() => '?').join(',')}) OR ${macs.map(() => 'nics_json LIKE ?').join(' OR ')}`
-    : ''
+    : '';
   const [rows] = await getPool().query<RowDataPacket[]>(
     `SELECT * FROM collect_records WHERE hostname = ? ${macCond} ORDER BY id DESC LIMIT 1`,
-    [hostname, ...macs, ...macs.map((m) => `%${m}%`)]
-  )
-  return (rows[0] as CollectRecord | undefined) ?? null
+    [hostname, ...macs, ...macs.map((m) => `%${m}%`)],
+  );
+
+  return (rows[0] as CollectRecord | undefined) ?? null;
 }

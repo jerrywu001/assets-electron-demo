@@ -16,15 +16,15 @@ Preload 桥接代码位于 `src/preload/`；共享实体和 IPC 契约位于 `sr
 
 ## 构建、测试与开发命令
 
-使用 `npm install` 安装依赖，然后使用以下命令：
+使用 `pnpm install` 安装依赖。项目通过安装前校验拒绝 `npm install` 与 `yarn install`，然后使用以下命令：
 
 ```bash
-npm run dev       # Electron + Vite development mode with HMR
-npm run build     # Build main, preload, and renderer bundles
-npm run smoke     # Build and run headless end-to-end smoke checks
-npm run ipc-test  # Build and exercise IPC integration checks
-npm run seed      # Load idempotent demonstration data
-npm run dist      # Build an NSIS installer in release/
+pnpm run dev       # Electron + Vite development mode with HMR
+pnpm run build     # Build main, preload, and renderer bundles
+pnpm run smoke     # Build and run headless end-to-end smoke checks
+pnpm run ipc-test  # Build and exercise IPC integration checks
+pnpm run seed      # Load idempotent demonstration data
+pnpm run dist      # Build an NSIS installer in release/
 ```
 
 运行依赖数据库的命令前，将 `db.config.example.json` 复制为 `db.config.json`，
@@ -39,8 +39,8 @@ npm run dist      # Build an NSIS installer in release/
 
 ## 测试指南
 
-项目目前没有配置独立的单元测试套件。使用 `npm run build` 验证编译，使用
-`npm run smoke` 或 `npm run ipc-test` 进行集成验证；这些命令需要可用的本地
+项目目前没有配置独立的单元测试套件。使用 `pnpm run build` 验证编译，使用
+`pnpm run smoke` 或 `pnpm run ipc-test` 进行集成验证；这些命令需要可用的本地
 MySQL 配置。修改界面时，应在开发模式下手动验证受影响的路由，并附上相关截图。
 
 ## 提交与拉取请求指南

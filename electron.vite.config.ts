@@ -6,7 +6,7 @@
 // undefined 调用 split()。从项目 package.json 推导主版本，兼容 npm/pnpm 安装方式。
 import fs from 'node:fs'
 import path from 'node:path'
-import { defineConfig } from 'electron-vite'
+import { defineConfig, loadEnv } from 'electron-vite'
 import vue from '@vitejs/plugin-vue'
 import tailwindcss from '@tailwindcss/vite'
 
@@ -29,10 +29,18 @@ if (fs.existsSync(electronExecutable) && !process.env.ELECTRON_EXEC_PATH) {
   process.env.ELECTRON_EXEC_PATH = electronExecutable
 }
 
-export default defineConfig({
-  main: {},
-  preload: {},
-  renderer: {
-    plugins: [vue(), tailwindcss()]
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+
+  return {
+    main: {
+      define: {
+        'process.env.ELECTRON_OPEN_DEVTOOLS': JSON.stringify(env.ELECTRON_OPEN_DEVTOOLS ?? 'false')
+      }
+    },
+    preload: {},
+    renderer: {
+      plugins: [vue(), tailwindcss()]
+    }
   }
 })

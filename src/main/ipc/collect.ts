@@ -1,11 +1,11 @@
 // ==================== IPC：本机采集上报 ====================
-import { IpcChannel } from '../../shared/ipc'
-import { handle } from './handle'
-import { collectAssetInfo } from '../services/collector'
-import { insertCollectRecord, listCollectRecords, findExistingRecord } from '../db/collect'
-import { matchAndUpdateAsset } from '../db/asset'
-import { insertAudit } from '../db/audit'
-import type { AssetInfo, CollectRecord, CollectResult } from '../../shared/types'
+import { IpcChannel } from '../../shared/ipc';
+import { handle } from './handle';
+import { collectAssetInfo } from '../services/collector';
+import { insertCollectRecord, listCollectRecords, findExistingRecord } from '../db/collect';
+import { matchAndUpdateAsset } from '../db/asset';
+import { insertAudit } from '../db/audit';
+import type { AssetInfo, CollectRecord, CollectResult } from '../../shared/types';
 
 export function registerCollectIpc(): void {
   // 一键采集：先按 hostname+MAC 去重，已采集过则直接返回已有记录、不再入库
@@ -43,9 +43,10 @@ export function registerCollectIpc(): void {
 
   // 只采集不入库：登记表单「自动提取本机配置」按钮用
   handle<[], AssetInfo>(IpcChannel.PreviewCollect, async () => {
-    const info = await collectAssetInfo()
-    await insertAudit('config-preview', `获取本机配置: ${info.hostname}`)
-    return info
-  })
+    const info = await collectAssetInfo();
+
+    await insertAudit('config-preview', `获取本机配置: ${info.hostname}`);
+    return info;
+  });
 
 }

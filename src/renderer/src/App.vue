@@ -1,49 +1,56 @@
+<!-- eslint-disable @stylistic/max-len -->
 <!-- ==================== 布局壳：合并式顶栏（无边框）+ 可收起侧栏 + 双主题 ==================== -->
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { ElMessage, ElMessageBox } from 'element-plus'
-import ScreenWatermark from './components/ScreenWatermark.vue'
-import { useElectron } from './composables/useElectron'
-import { errMsg } from './utils'
+import { computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { ElMessage, ElMessageBox } from 'element-plus';
+import ScreenWatermark from './components/ScreenWatermark.vue';
+import { useElectron } from './composables/useElectron';
+import { errMsg } from './utils';
 
-const route = useRoute()
-const router = useRouter()
-const api = useElectron()
+const route = useRoute();
+const router = useRouter();
+const api = useElectron();
 
 // ---- 侧栏收起状态（localStorage 持久化） ----
-const collapsed = ref(localStorage.getItem('sidebar-collapsed') === '1')
-watch(collapsed, (v) => localStorage.setItem('sidebar-collapsed', v ? '1' : '0'))
+const collapsed = ref(localStorage.getItem('sidebar-collapsed') === '1');
+
+watch(collapsed, (v) => localStorage.setItem('sidebar-collapsed', v ? '1' : '0'));
 
 // ---- 暗色主题（var(--app-*) 方案：只是 toggle html.dark，颜色全部走 CSS 变量联动） ----
-const isDark = ref(localStorage.getItem('app-theme') === 'dark')
+const isDark = ref(localStorage.getItem('app-theme') === 'dark');
+
 watch(
   isDark,
   (v) => {
-    document.documentElement.classList.toggle('dark', v)
-    localStorage.setItem('app-theme', v ? 'dark' : 'light')
+    document.documentElement.classList.toggle('dark', v);
+    localStorage.setItem('app-theme', v ? 'dark' : 'light');
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 // ---- 顶栏菜单动作 ----
 async function onFileCommand(cmd: string): Promise<void> {
   if (cmd === 'export') {
     try {
-      const file = await api.exportExcel({ page: 1, pageSize: 20 })
-      if (file) ElMessageBox.alert(file, '导出成功', { confirmButtonText: '知道了' })
+      const file = await api.exportExcel({
+        page: 1,
+        pageSize: 20,
+      });
+
+      if (file) ElMessageBox.alert(file, '导出成功', { confirmButtonText: '知道了' });
     } catch (e) {
-      ElMessage.error(errMsg(e))
+      ElMessage.error(errMsg(e));
     }
   } else if (cmd === 'quit') {
-    await api.windowControl('close')
+    await api.windowControl('close');
   }
 }
 
 function onViewCommand(cmd: string): void {
-  if (cmd === 'theme') isDark.value = !isDark.value
-  else if (cmd === 'sidebar') collapsed.value = !collapsed.value
-  else if (cmd === 'reload') location.reload()
+  if (cmd === 'theme') isDark.value = !isDark.value;
+  else if (cmd === 'sidebar') collapsed.value = !collapsed.value;
+  else if (cmd === 'reload') location.reload();
 }
 
 function onHelpCommand(cmd: string): void {
@@ -51,26 +58,54 @@ function onHelpCommand(cmd: string): void {
     ElMessageBox.alert(
       'Electron + Vue3 + TypeScript · 组织架构 / 员工 / 资产台账 / 设备总览 / 折旧净值 / 采集联动 / 审计管控',
       '资产台账管理系统 v1.0',
-      { confirmButtonText: '知道了' }
-    )
+      { confirmButtonText: '知道了' },
+    );
   }
 }
 
 // heroicons outline 路径（stroke 风格，与 Next.js 官网图标语言一致）
 const nav = [
-  { path: '/dashboard', label: '仪表盘', icon: 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z' },
-  { path: '/categories', label: '资产分类管理', icon: 'M4.5 6.75h15M4.5 12h15M4.5 17.25h15' },
-  { path: '/assets', label: '资产台账', icon: 'M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9' },
-  { path: '/devices', label: '设备总览', icon: 'M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25' },
-  { path: '/employees', label: '员工管理', icon: 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z' },
-  { path: '/org', label: '组织架构', icon: 'M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21' },
-  { path: '/audits', label: '审计日志', icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' }
-]
+  {
+    path: '/dashboard',
+    label: '仪表盘',
+    icon: 'M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z',
+  },
+  {
+    path: '/categories',
+    label: '资产分类管理',
+    icon: 'M4.5 6.75h15M4.5 12h15M4.5 17.25h15',
+  },
+  {
+    path: '/assets',
+    label: '资产台账',
+    icon: 'M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9',
+  },
+  {
+    path: '/devices',
+    label: '设备总览',
+    icon: 'M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25',
+  },
+  {
+    path: '/employees',
+    label: '员工管理',
+    icon: 'M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z',
+  },
+  {
+    path: '/org',
+    label: '组织架构',
+    icon: 'M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21',
+  },
+  {
+    path: '/audits',
+    label: '审计日志',
+    icon: 'M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z',
+  },
+];
 
-const activePath = computed(() => (route.path.startsWith('/assets') ? '/assets' : route.path))
+const activePath = computed(() => route.path.startsWith('/assets') ? '/assets' : route.path);
 
 // 主进程推送的管控通知（打印/下载被拦截时）
-api.onAuditNotice((msg) => ElMessage.warning(msg))
+api.onAuditNotice((msg) => ElMessage.warning(msg));
 </script>
 
 <template>
@@ -92,8 +127,12 @@ api.onAuditNotice((msg) => ElMessage.warning(msg))
           <span class="menu-item">文件</span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="export">导出台账 Excel</el-dropdown-item>
-              <el-dropdown-item command="quit" divided>退出</el-dropdown-item>
+              <el-dropdown-item command="export">
+                导出台账 Excel
+              </el-dropdown-item>
+              <el-dropdown-item command="quit" divided>
+                退出
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -101,9 +140,15 @@ api.onAuditNotice((msg) => ElMessage.warning(msg))
           <span class="menu-item">视图</span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="theme">{{ isDark ? '切换为亮色' : '切换为暗色' }}</el-dropdown-item>
-              <el-dropdown-item command="sidebar">{{ collapsed ? '展开侧栏' : '收起侧栏' }}</el-dropdown-item>
-              <el-dropdown-item command="reload" divided>重新加载</el-dropdown-item>
+              <el-dropdown-item command="theme">
+                {{ isDark ? '切换为亮色' : '切换为暗色' }}
+              </el-dropdown-item>
+              <el-dropdown-item command="sidebar">
+                {{ collapsed ? '展开侧栏' : '收起侧栏' }}
+              </el-dropdown-item>
+              <el-dropdown-item command="reload" divided>
+                重新加载
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -111,7 +156,9 @@ api.onAuditNotice((msg) => ElMessage.warning(msg))
           <span class="menu-item">帮助</span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="about">关于</el-dropdown-item>
+              <el-dropdown-item command="about">
+                关于
+              </el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
@@ -201,21 +248,27 @@ api.onAuditNotice((msg) => ElMessage.warning(msg))
 .titlebar {
   -webkit-app-region: drag;
 }
+
 .no-drag {
   -webkit-app-region: no-drag;
 }
+
 .menu-item {
   cursor: pointer;
   border-radius: 6px;
   padding: 3px 10px;
   color: var(--app-text-2);
   outline: none;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
+
 .menu-item:hover {
   background: var(--app-hover);
   color: var(--app-text);
 }
+
 .win-btn {
   display: flex;
   height: 40px;
@@ -223,19 +276,25 @@ api.onAuditNotice((msg) => ElMessage.warning(msg))
   align-items: center;
   justify-content: center;
   color: var(--app-text-2);
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
 }
+
 .win-btn:hover {
   background: var(--app-hover);
   color: var(--app-text);
 }
+
 .win-btn-close:hover {
   background: #e81123;
   color: #fff;
 }
+
 .main-expanded {
   --sidebar-width: 224px;
 }
+
 .main-collapsed {
   --sidebar-width: 56px;
 }
