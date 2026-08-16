@@ -5,9 +5,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { useElectron } from '../composables/useElectron';
 import { errMsg, fmtMoney } from '../utils';
-import { CATEGORY_LABELS, STATUS_LABELS } from '../../../shared/depreciation';
+import { STATUS_LABELS } from '../../../shared/depreciation';
 import AssetDetailDrawer from '../components/AssetDetailDrawer.vue';
-import type { Asset, AssetQuery, AssetStats, DepartmentNode } from '../../../shared/types';
+import type { Asset, AssetCategoryOption, AssetQuery, AssetStats, DepartmentNode } from '../../../shared/types';
 
 const api = useElectron();
 const router = useRouter();
@@ -26,6 +26,7 @@ const total = ref(0);
 const loading = ref(false);
 const stats = ref<AssetStats | null>(null);
 const deptTree = ref<DepartmentNode[]>([]);
+const categories = ref<AssetCategoryOption[]>([]);
 const detailId = ref<number | null>(null);
 
 const treeProps = {
@@ -51,6 +52,10 @@ async function refresh(): Promise<void> {
 function search(): void {
   query.page = 1;
   void refresh();
+}
+
+function categoryName(value: string): string {
+  return categories.value.find((category) => category.value === value)?.name ?? value;
 }
 
 async function exportExcel(): Promise<void> {
@@ -105,7 +110,13 @@ onMounted(async () => {
   if (typeof route.query.status === 'string') query.status = route.query.status as AssetQuery['status'];
   if (typeof route.query.keyword === 'string') query.keyword = route.query.keyword;
   if (route.query.condition === 'low') query.condition = 'low';
-  deptTree.value = await api.getDeptTree();
+  const [departments, categoryOptions] = await Promise.all([
+    api.getDeptTree(),
+    api.listCategories(),
+  ]);
+
+  deptTree.value = departments;
+  categories.value = categoryOptions;
   await refresh();
 });
 </script>
@@ -163,7 +174,7 @@ onMounted(async () => {
 
   <div class="filter-bar">
     <el-select v-model="query.category" placeholder="分类" clearable style="width: 120px;" @change="search">
-      <el-option v-for="(label, key) in CATEGORY_LABELS" :key="key" :label="label" :value="key" />
+      <el-option v-for="category in categories" :key="category.value" :label="category.name" :value="category.value" />
     </el-select>
     <el-select v-model="query.status" placeholder="状态" clearable style="width: 120px;" @change="search">
       <el-option v-for="(label, key) in STATUS_LABELS" :key="key" :label="label" :value="key" />
@@ -205,8 +216,8 @@ onMounted(async () => {
       <el-table-column prop="asset_no" label="编号" width="150" />
       <el-table-column label="分类" width="140">
         <template #default="{ row }">
-          <el-tooltip :content="CATEGORY_LABELS[row.category as keyof typeof CATEGORY_LABELS]" placement="top">
-            <span class="category-cell">{{ CATEGORY_LABELS[row.category as keyof typeof CATEGORY_LABELS] }}</span>
+          <el-tooltip :content="categoryName(row.category)" placement="top">
+            <span class="category-cell">{{ categoryName(row.category) }}</span>
           </el-tooltip>
         </template>
       </el-table-column>

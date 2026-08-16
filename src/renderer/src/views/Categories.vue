@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
+import { Refresh } from '@element-plus/icons-vue';
 import { useElectron } from '../composables/useElectron';
 import { errMsg } from '../utils';
 const api = useElectron(); const rows = ref<any[]>([]); const types = ref<any[]>([]); const loading = ref(false); const configRow = ref<any | null>(null); const selected = ref<number[]>([]);
@@ -83,34 +84,38 @@ onMounted(load);
   <el-card shadow="never">
     <template #header>
       <div class="head">
-        <span>资产分类</span><el-button type="primary" size="small" @click="add">
-          新增分类
-        </el-button>
+        <span>资产分类</span>
+        <div class="head-actions">
+          <el-tooltip content="刷新分类" placement="top">
+            <el-button :icon="Refresh" circle :loading="loading" size="small" @click="load" />
+          </el-tooltip>
+          <el-button type="primary" size="small" @click="add">
+            新增分类
+          </el-button>
+        </div>
       </div>
     </template>
-    <div class="data-table-wrap">
-      <el-table v-loading="loading" height="100%" :data="rows" border>
-        <el-table-column prop="name" label="分类名称" /><el-table-column prop="value" label="Value" width="180" /><el-table-column label="类型" width="100">
-          <template #default="{row}">
-            {{ row.is_preset?'预置':'自定义' }}
-          </template>
-        </el-table-column><el-table-column label="关联设备类型" min-width="220">
-          <template #default="{row}">
-            {{ row.device_types.map((x:any)=>x.name).join('、')||'未配置' }}
-          </template>
-        </el-table-column><el-table-column label="操作" width="250">
-          <template #default="{row}">
-            <el-button link type="primary" @click="openConfig(row)">
-              配置设备类型
-            </el-button><el-button link :disabled="row.is_preset" @click="rename(row)">
-              改名
-            </el-button><el-button link type="danger" :disabled="row.is_preset" @click="remove(row)">
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
+    <el-table v-loading="loading" :data="rows" border>
+      <el-table-column prop="name" label="分类名称" /><el-table-column prop="value" label="Value" width="180" /><el-table-column label="类型" width="100">
+        <template #default="{row}">
+          {{ row.is_preset?'预置':'自定义' }}
+        </template>
+      </el-table-column><el-table-column label="关联设备类型" min-width="220">
+        <template #default="{row}">
+          {{ row.device_types.map((x:any)=>x.name).join('、')||'未配置' }}
+        </template>
+      </el-table-column><el-table-column label="操作" width="250">
+        <template #default="{row}">
+          <el-button link type="primary" @click="openConfig(row)">
+            配置设备类型
+          </el-button><el-button link :disabled="row.is_preset" @click="rename(row)">
+            改名
+          </el-button><el-button link type="danger" :disabled="row.is_preset" @click="remove(row)">
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
   </el-card>
   <el-drawer v-model="configRow" title="配置设备类型" direction="rtl" size="480px" class="device-type-drawer">
     <div class="drawer-subtitle">
@@ -135,6 +140,12 @@ onMounted(load);
 .head {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.head-actions {
+  display: flex;
+  gap: 8px;
   align-items: center;
 }
 
