@@ -1,0 +1,24 @@
+# 依赖
+node_modules/
+
+# 编译产物（electron-vite）
+out/
+dist/
+src/renderer/dist/
+
+# electron-builder 打包输出
+release/
+
+# 日志
+*.log
+npm-debug.log*
+
+# 数据库连接配置（含密码，绝不入库）
+db.config.json
+
+# 系统/编辑器
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+cache/

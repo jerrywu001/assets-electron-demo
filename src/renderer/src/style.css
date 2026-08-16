@@ -1,0 +1,224 @@
+/* ==================== 全局样式：Tailwind 4 + 语义化 CSS 变量双主题 ==================== */
+/* 主题方案（面试可讲）：颜色一律走语义变量 var(--app-*)，
+   亮色值定义在 :root，暗色值定义在 html.dark；
+   Tailwind 通过 @theme inline 把工具类映射到变量上（bg-app-surface 等），
+   切换主题只是 toggle 一个 .dark class，所有颜色即时联动，零 JS 改样式。 */
+@import 'tailwindcss';
+
+/* 让 Tailwind 的 dark: 变体响应 html.dark class（默认是媒体查询） */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+}
+
+/* ---- 语义变量：亮色（Next.js/Vercel 官网风） ---- */
+:root {
+  --app-bg: #ffffff; /* 主内容区底色 */
+  --app-surface: #fafafa; /* 侧栏/表头/次级面 */
+  --app-border: #eaeaea; /* 细边框 */
+  --app-text: #171717; /* 主文本 */
+  --app-text-2: #525252; /* 次级文本 */
+  --app-text-3: #737373; /* 弱化文本/副标题 */
+  --app-hover: #f5f5f5; /* 悬停底 */
+  --app-active: #eaeaea; /* 选中底 */
+  --app-primary: #171717; /* 主色（按钮/强调） */
+  --app-primary-text: #ffffff;
+}
+
+/* ---- 语义变量：暗色（Vercel 深色风） ---- */
+html.dark {
+  --app-bg: #0a0a0a;
+  --app-surface: #111111;
+  --app-border: #262626;
+  --app-text: #ededed;
+  --app-text-2: #a3a3a3;
+  --app-text-3: #8a8a8a;
+  --app-hover: #1a1a1a;
+  --app-active: #262626;
+  --app-primary: #ededed; /* 暗色下主按钮反白 */
+  --app-primary-text: #0a0a0a;
+}
+
+/* ---- Tailwind 工具类映射到语义变量（inline：工具类直接引用 var，运行时切换生效） ---- */
+@theme inline {
+  --color-app-bg: var(--app-bg);
+  --color-app-surface: var(--app-surface);
+  --color-app-border: var(--app-border);
+  --color-app-text: var(--app-text);
+  --color-app-text2: var(--app-text-2);
+  --color-app-text3: var(--app-text-3);
+  --color-app-hover: var(--app-hover);
+  --color-app-active: var(--app-active);
+  --color-app-primary: var(--app-primary);
+  --color-app-primary-text: var(--app-primary-text);
+}
+
+/* ---- Element Plus 主题变量也挂到语义变量上 ---- */
+/* 选择器写成 :root, html.dark：EP 暗色包用 html.dark 定义变量，
+   同优先级下本文件导入在后，确保暗色下主色仍由 --app-primary 决定 */
+:root,
+html.dark {
+  --el-color-primary: var(--app-primary);
+  --el-color-primary-light-3: color-mix(in srgb, var(--app-primary) 70%, var(--app-bg));
+  --el-color-primary-light-5: color-mix(in srgb, var(--app-primary) 50%, var(--app-bg));
+  --el-color-primary-light-7: color-mix(in srgb, var(--app-primary) 30%, var(--app-bg));
+  --el-color-primary-light-8: color-mix(in srgb, var(--app-primary) 20%, var(--app-bg));
+  --el-color-primary-light-9: color-mix(in srgb, var(--app-primary) 8%, var(--app-bg));
+  --el-color-primary-dark-2: color-mix(in srgb, var(--app-primary) 85%, #000);
+  --el-border-radius-base: 6px;
+  --el-border-radius-small: 4px;
+  --el-border-color: var(--app-border);
+  --el-border-color-light: var(--app-border);
+  --el-border-color-lighter: var(--app-border);
+  --el-border-color-extra-light: var(--app-border);
+  --el-text-color-primary: var(--app-text);
+  --el-text-color-regular: var(--app-text-2);
+  --el-text-color-secondary: var(--app-text-3);
+  --el-fill-color-light: var(--app-surface);
+  --el-bg-color: var(--app-bg);
+  --el-font-family: var(--font-sans);
+}
+
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--app-text);
+  background: var(--app-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* ---- Element Plus 组件细节打磨（全部走语义变量，双主题自适应） ---- */
+.el-card {
+  border-color: var(--app-border);
+  border-radius: 12px;
+  box-shadow: none !important;
+  background: var(--app-bg);
+  color: var(--app-text);
+}
+.el-card__header {
+  border-bottom-color: var(--app-border);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 14px 20px;
+}
+
+.el-table {
+  --el-table-border-color: var(--app-border);
+  --el-table-header-bg-color: var(--app-surface);
+  --el-table-header-text-color: var(--app-text-2);
+  --el-table-row-hover-bg-color: var(--app-hover);
+  --el-table-tr-bg-color: var(--app-bg);
+  --el-table-text-color: var(--app-text-2);
+}
+.el-table th.el-table__cell {
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.el-button {
+  font-weight: 500;
+  transition: all 0.15s ease;
+}
+
+/* ---- 反白主色方案的前景修复 ----
+   主按钮底 = --app-primary（暗色下是近白 #ededed），
+   但 EP 默认按钮文字固定用 --el-color-white → 暗色下白底白字。
+   修复：所有"主色底"组件的前景统一跟随 --app-primary-text（亮=白，暗=黑）。 */
+.el-button--primary {
+  --el-button-text-color: var(--app-primary-text);
+  --el-button-hover-text-color: var(--app-primary-text);
+  --el-button-active-text-color: var(--app-primary-text);
+  --el-button-disabled-text-color: color-mix(in srgb, var(--app-primary-text) 55%, transparent);
+}
+/* 勾选/单选/开关：对勾与小圆点同样属于"主色底上的前景" */
+.el-checkbox {
+  --el-checkbox-checked-icon-color: var(--app-primary-text);
+}
+.el-radio {
+  --el-radio-checked-icon-color: var(--app-primary-text);
+}
+.el-switch {
+  --el-switch-button-color: var(--app-primary-text);
+}
+/* 分页当前页、步骤条等主色底白字组件 */
+.el-pagination {
+  --el-pagination-hover-color: var(--app-text);
+}
+.el-pagination.is-background .el-pager li.is-active {
+  color: var(--app-primary-text);
+}
+
+.el-tag {
+  border-radius: 999px;
+  font-weight: 500;
+}
+/* info 标签默认对比度太低（浅灰底灰字在白底上近乎隐形），改用语义变量加深 */
+.el-tag--info {
+  --el-tag-bg-color: var(--app-active);
+  --el-tag-border-color: var(--app-border);
+  --el-tag-text-color: var(--app-text-2);
+}
+
+.el-drawer {
+  --el-drawer-bg-color: var(--app-bg);
+}
+.el-drawer__header {
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: var(--app-text);
+}
+
+.el-dialog {
+  border-radius: 12px;
+}
+
+.el-descriptions {
+  --el-descriptions-item-bordered-label-background: var(--app-surface);
+}
+
+.el-tree {
+  --el-tree-node-hover-bg-color: var(--app-hover);
+  background: transparent;
+  color: var(--app-text-2);
+}
+
+.el-empty__description p {
+  color: var(--app-text-3);
+}
+
+/* ---- 页面通用元素（各视图共用） ---- */
+.page-title {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 4px;
+  color: var(--app-text);
+}
+
+/* Keep long data lists scrollable while leaving filters and pagination visible. */
+.data-table-wrap {
+  height: clamp(260px, calc(100vh - 395px), 700px);
+  min-height: 240px;
+}
+.page-sub {
+  color: var(--app-text-3);
+  font-size: 13px;
+  margin: 0 0 20px;
+}
+.filter-bar {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}

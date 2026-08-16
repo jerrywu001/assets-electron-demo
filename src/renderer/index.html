@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <!--
+    CSP：只允许同源脚本/样式，防 XSS。
+    connect-src 里的 localhost/ws 是给 Vite dev server 的 HMR 留的口子，
+    生产环境（file://）不受影响。真实项目可按环境区分 CSP。
+  -->
+  <meta
+    http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' http://localhost:* ws://localhost:*"
+  />
+  <title>资产盘点客户端</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
