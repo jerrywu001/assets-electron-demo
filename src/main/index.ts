@@ -1,6 +1,6 @@
 // ==================== 主进程入口 ====================
 import path from 'path';
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, dialog } from 'electron';
 import { initDb, getPool } from './db';
 import { getDeptTree, createDept, deleteDept } from './db/department';
 import { createEmployee, previewEmpLeft, markEmpLeft } from './db/employee';
@@ -289,6 +289,9 @@ app.whenReady().then(async () => {
   } catch (e) {
     // 数据库连不上（没启动/密码错）时给出明确提示再退出
     console.error('数据库初始化失败，请检查 db.config.json 和 MySQL 服务：', e);
+    const message = e instanceof Error ? e.message : String(e);
+
+    dialog.showErrorBox('资产台账管理系统启动失败', `${message}\n\n请确认 MySQL 服务已启动且数据库配置正确。`);
     app.exit(1);
     return;
   }

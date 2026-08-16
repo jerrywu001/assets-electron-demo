@@ -13,6 +13,7 @@
     "ipc-test": "electron-vite build && electron . --ipc-test",
     "seed:rich": "node scripts/seed-rich.mjs",
     "dist": "electron-vite build && electron-builder",
+    "dist:mac": "electron-vite build && electron-builder --mac",
     "clean": "node scripts/clear-data.js",
     "lint": "eslint \"src/**/*.{ts,vue}\" \"scripts/**/*.{js,mjs}\"",
     "stylelint": "stylelint \"src/**/*.{css,vue}\"",
@@ -54,6 +55,11 @@
     "vite": "^7.0.0",
     "vue-eslint-parser": "^10.4.1"
   },
+  "pnpm": {
+    "overrides": {
+      "@electron/get": "5.1.0"
+    }
+  },
   "build": {
     "appId": "com.example.assetinventory",
     "productName": "资产台账管理系统",
@@ -68,6 +74,13 @@
     ],
     "win": {
       "target": "nsis"
+    },
+    "mac": {
+      "target": [
+        "dmg",
+        "zip"
+      ],
+      "category": "public.app-category.business"
     },
     "nsis": {
       "oneClick": false,

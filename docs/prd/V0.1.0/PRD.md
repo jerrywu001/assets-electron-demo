@@ -262,7 +262,7 @@ audits        (id, action, detail, at)   -- 沿用现有
 | 性能 | 台账 1000 条内列表不卡（分页或虚拟滚动超量再说） |
 | 数据 | MySQL 集中存储；连接配置 db.config.json 不入库 git |
 | 兼容 | Windows 10/11、macOS、Linux；本机配置采集支持三端 |
-| 打包 | electron-builder NSIS + autoUpdater 配置沿用 |
+| 打包 | electron-builder Windows NSIS、macOS DMG/ZIP + autoUpdater 配置沿用 |
 
 ## 7. 非目标（本版不做）
 
